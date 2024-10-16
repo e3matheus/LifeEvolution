@@ -1,5 +1,4 @@
 let board = [];
-const gridSize = 3;
 let isPlaying = false;
 let autoPlayInterval;
 

@@ -1,7 +1,6 @@
 let board = [];
 let isPlaying = false;
 let autoPlayInterval;
-let renderer, camera, scene;
 
 document.addEventListener('DOMContentLoaded', () => {
     const nextGenBtn = document.getElementById('nextGen');
@@ -36,7 +35,7 @@ function updateVisualization() {
 
 function toggleCell(x, y, z) {
     board[x][y][z] = 1 - board[x][y][z];
-    updateCube(x, y, z, board[x][y][z] === 1);
+    updateVisualization();
 }
 
 function nextGeneration() {
@@ -75,39 +74,13 @@ function resetBoard() {
     resetCubes();
 }
 
-function initializeClickListener() {
+function initializeClickListener(renderer) {
     if (renderer && renderer.domElement) {
         renderer.domElement.addEventListener('click', onCubeClick, false);
     }
 }
 
-function onCubeClick(event) {
-    event.preventDefault();
-
-    const mouse = new THREE.Vector2();
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, camera);
-
-    const intersects = raycaster.intersectObjects(scene.children);
-
-    if (intersects.length > 0) {
-        const clickedCube = intersects[0].object;
-        const index = scene.children.indexOf(clickedCube);
-        const x = Math.floor((index - 2) / (gridSize * gridSize));
-        const y = Math.floor(((index - 2) % (gridSize * gridSize)) / gridSize);
-        const z = (index - 2) % gridSize;
-
-        toggleCell(x, y, z);
-    }
-}
-
 // Function to be called from three_visualization.js after initialization
 function setThreeJSObjects(rendererObj, cameraObj, sceneObj) {
-    renderer = rendererObj;
-    camera = cameraObj;
-    scene = sceneObj;
-    initializeClickListener();
+    initializeClickListener(rendererObj);
 }

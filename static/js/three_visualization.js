@@ -67,6 +67,7 @@ function updateCube(x, y, z, isAlive) {
     const index = x * gridSize * gridSize + y * gridSize + z;
     const cube = scene.children[index + 2]; // +2 to account for the lights
     cube.material.color.setHex(isAlive ? 0x00ff00 : 0xffffff);
+    cube.material.wireframe = !isAlive;
     cube.userData.originalColor = cube.material.color.getHex();
 }
 
@@ -104,6 +105,24 @@ function onMouseMove(event) {
             onCubeHoverOut({object: child});
         }
     });
+}
+
+function onCubeClick(event) {
+    event.preventDefault();
+    const mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(scene.children);
+    if (intersects.length > 0) {
+        const clickedCube = intersects[0].object;
+        const index = scene.children.indexOf(clickedCube) - 2; // Subtract 2 to account for lights
+        const x = Math.floor(index / (gridSize * gridSize));
+        const y = Math.floor((index % (gridSize * gridSize)) / gridSize);
+        const z = index % gridSize;
+        toggleCell(x, y, z);
+    }
 }
 
 window.addEventListener('resize', () => {

@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conway's Game of Life</title>
+    <title>3D Conway's Game of Life</title>
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
     <style>
+        .layer {
+            display: inline-block;
+            margin-right: 20px;
+        }
         .cell {
             width: 20px;
             height: 20px;
@@ -21,12 +25,7 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="mb-4">Conway's Game of Life</h1>
-        <div class="mb-3">
-            <label for="boardSize" class="form-label">Board Size:</label>
-            <input type="number" id="boardSize" class="form-control" min="5" max="50" value="20">
-        </div>
-        <button id="createBoard" class="btn btn-primary mb-3">Create Board</button>
+        <h1 class="mb-4">3D Conway's Game of Life</h1>
         <div id="board" class="mb-3"></div>
         <button id="nextGen" class="btn btn-success me-2">Next Generation</button>
         <button id="autoPlay" class="btn btn-info">Auto Play</button>

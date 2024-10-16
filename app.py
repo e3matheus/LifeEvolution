@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, jsonify
-from game_of_life import GameOfLife
+from game_of_life import GameOfLife3D
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
@@ -13,7 +13,7 @@ def index():
 def next_generation():
     data = request.json
     board = data['board']
-    game = GameOfLife(board)
+    game = GameOfLife3D(board)
     next_gen = game.next_generation()
     return jsonify({'board': next_gen})
 

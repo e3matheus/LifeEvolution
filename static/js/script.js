@@ -1,26 +1,24 @@
 let board = [];
-let boardSize = 20;
+const gridSize = 3;
 let isPlaying = false;
 let autoPlayInterval;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const createBoardBtn = document.getElementById('createBoard');
     const nextGenBtn = document.getElementById('nextGen');
     const autoPlayBtn = document.getElementById('autoPlay');
-    const boardSizeInput = document.getElementById('boardSize');
 
-    createBoardBtn.addEventListener('click', createBoard);
     nextGenBtn.addEventListener('click', nextGeneration);
     autoPlayBtn.addEventListener('click', toggleAutoPlay);
-    boardSizeInput.addEventListener('change', () => {
-        boardSize = parseInt(boardSizeInput.value);
-    });
 
     createBoard();
 });
 
 function createBoard() {
-    board = Array(boardSize).fill().map(() => Array(boardSize).fill(0));
+    board = Array(gridSize).fill().map(() => 
+        Array(gridSize).fill().map(() => 
+            Array(gridSize).fill(0)
+        )
+    );
     renderBoard();
 }
 
@@ -28,22 +26,28 @@ function renderBoard() {
     const boardElement = document.getElementById('board');
     boardElement.innerHTML = '';
     
-    for (let i = 0; i < boardSize; i++) {
-        for (let j = 0; j < boardSize; j++) {
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            if (board[i][j] === 1) {
-                cell.classList.add('alive');
+    for (let l = 0; l < gridSize; l++) {
+        const layer = document.createElement('div');
+        layer.classList.add('layer');
+        
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                if (board[l][i][j] === 1) {
+                    cell.classList.add('alive');
+                }
+                cell.addEventListener('click', () => toggleCell(l, i, j));
+                layer.appendChild(cell);
             }
-            cell.addEventListener('click', () => toggleCell(i, j));
-            boardElement.appendChild(cell);
+            layer.appendChild(document.createElement('br'));
         }
-        boardElement.appendChild(document.createElement('br'));
+        boardElement.appendChild(layer);
     }
 }
 
-function toggleCell(row, col) {
-    board[row][col] = 1 - board[row][col];
+function toggleCell(layer, row, col) {
+    board[layer][row][col] = 1 - board[layer][row][col];
     renderBoard();
 }
 

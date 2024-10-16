@@ -6,9 +6,11 @@ let autoPlayInterval;
 document.addEventListener('DOMContentLoaded', () => {
     const nextGenBtn = document.getElementById('nextGen');
     const autoPlayBtn = document.getElementById('autoPlay');
+    const resetBtn = document.getElementById('reset');
 
     nextGenBtn.addEventListener('click', nextGeneration);
     autoPlayBtn.addEventListener('click', toggleAutoPlay);
+    resetBtn.addEventListener('click', resetBoard);
 
     createBoard();
 });
@@ -19,36 +21,22 @@ function createBoard() {
             Array(gridSize).fill(0)
         )
     );
-    renderBoard();
+    updateVisualization();
 }
 
-function renderBoard() {
-    const boardElement = document.getElementById('board');
-    boardElement.innerHTML = '';
-    
-    for (let l = 0; l < gridSize; l++) {
-        const layer = document.createElement('div');
-        layer.classList.add('layer');
-        
-        for (let i = 0; i < gridSize; i++) {
-            for (let j = 0; j < gridSize; j++) {
-                const cell = document.createElement('div');
-                cell.classList.add('cell');
-                if (board[l][i][j] === 1) {
-                    cell.classList.add('alive');
-                }
-                cell.addEventListener('click', () => toggleCell(l, i, j));
-                layer.appendChild(cell);
+function updateVisualization() {
+    for (let x = 0; x < gridSize; x++) {
+        for (let y = 0; y < gridSize; y++) {
+            for (let z = 0; z < gridSize; z++) {
+                updateCube(x, y, z, board[x][y][z] === 1);
             }
-            layer.appendChild(document.createElement('br'));
         }
-        boardElement.appendChild(layer);
     }
 }
 
-function toggleCell(layer, row, col) {
-    board[layer][row][col] = 1 - board[layer][row][col];
-    renderBoard();
+function toggleCell(x, y, z) {
+    board[x][y][z] = 1 - board[x][y][z];
+    updateVisualization();
 }
 
 function nextGeneration() {
@@ -62,7 +50,7 @@ function nextGeneration() {
     .then(response => response.json())
     .then(data => {
         board = data.board;
-        renderBoard();
+        updateVisualization();
     });
 }
 
@@ -80,4 +68,35 @@ function toggleAutoPlay() {
         autoPlayBtn.classList.add('btn-danger');
     }
     isPlaying = !isPlaying;
+}
+
+function resetBoard() {
+    createBoard();
+    resetCubes();
+}
+
+// Add event listener for cube clicks
+renderer.domElement.addEventListener('click', onCubeClick, false);
+
+function onCubeClick(event) {
+    event.preventDefault();
+
+    const mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObjects(scene.children);
+
+    if (intersects.length > 0) {
+        const clickedCube = intersects[0].object;
+        const index = scene.children.indexOf(clickedCube);
+        const x = Math.floor(index / (gridSize * gridSize));
+        const y = Math.floor((index % (gridSize * gridSize)) / gridSize);
+        const z = index % gridSize;
+
+        toggleCell(x, y, z);
+    }
 }

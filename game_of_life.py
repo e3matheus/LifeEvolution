@@ -26,10 +26,8 @@ class GameOfLife3D:
                     if self.board[l][i][j] == 1:
                         if 4 <= neighbors <= 5:
                             new_board[l][i][j] = 1
-                        else:
-                            new_board[l][i][j] = 0  # Cell dies due to underpopulation or overpopulation
                     else:
                         if neighbors == 4:
-                            new_board[l][i][j] = 1  # Cell becomes alive due to reproduction
+                            new_board[l][i][j] = 1
         
         return new_board

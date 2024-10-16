@@ -21,8 +21,13 @@
         <div id="board" class="mb-3"></div>
         <button id="nextGen" class="btn btn-success me-2">Next Generation</button>
         <button id="autoPlay" class="btn btn-info me-2">Auto Play</button>
-        <button id="reset" class="btn btn-secondary">Reset</button>
+        <button id="reset" class="btn btn-secondary me-2">Reset</button>
+        <button id="saveConfig" class="btn btn-primary me-2">Save Configuration</button>
+        <a href="/configurations" class="btn btn-secondary me-2">Saved Configurations</a>
     </div>
+    <script>
+        const initialBoard = {{ initial_board | tojson | safe if initial_board else 'null' }};
+    </script>
     <script src="{{ url_for('static', filename='js/three_visualization.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

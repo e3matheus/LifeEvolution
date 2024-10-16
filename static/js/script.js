@@ -6,20 +6,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextGenBtn = document.getElementById('nextGen');
     const autoPlayBtn = document.getElementById('autoPlay');
     const resetBtn = document.getElementById('reset');
+    const saveConfigBtn = document.getElementById('saveConfig');
 
     nextGenBtn.addEventListener('click', nextGeneration);
     autoPlayBtn.addEventListener('click', toggleAutoPlay);
     resetBtn.addEventListener('click', resetBoard);
+    saveConfigBtn.addEventListener('click', saveConfiguration);
 
     createBoard();
 });
 
 function createBoard() {
-    board = Array(gridSize).fill().map(() => 
-        Array(gridSize).fill().map(() => 
-            Array(gridSize).fill(0)
-        )
-    );
+    if (initialBoard) {
+        board = initialBoard;
+    } else {
+        board = Array(gridSize).fill().map(() => 
+            Array(gridSize).fill().map(() => 
+                Array(gridSize).fill(0)
+            )
+        );
+    }
     updateVisualization();
 }
 
@@ -80,7 +86,20 @@ function initializeClickListener(renderer) {
     }
 }
 
-// Function to be called from three_visualization.js after initialization
 function setThreeJSObjects(rendererObj, cameraObj, sceneObj) {
     initializeClickListener(rendererObj);
+}
+
+function saveConfiguration() {
+    fetch('/save_configuration', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ board: board }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Configuration saved successfully!');
+    });
 }

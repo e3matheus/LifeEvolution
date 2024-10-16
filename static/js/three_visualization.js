@@ -31,6 +31,7 @@ function initThreeJS() {
                     (y - (gridSize - 1) / 2) * spacing,
                     (z - (gridSize - 1) / 2) * spacing
                 );
+                cube.userData.originalColor = cube.material.color.getHex();
                 scene.add(cube);
             }
         }
@@ -41,12 +42,19 @@ function initThreeJS() {
     camera.lookAt(0, 0, 0);
 
     // Add orbit controls
-    controls = new THREE.OrbitControls(camera, document.getElementById('board'));
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
     controls.enableZoom = true;
 
+    renderer.domElement.addEventListener('mousemove', onMouseMove, false);
+
     animate();
+
+    // Call the function to set Three.js objects in script.js
+    if (typeof setThreeJSObjects === 'function') {
+        setThreeJSObjects(renderer, camera, scene);
+    }
 }
 
 function animate() {
@@ -58,14 +66,43 @@ function animate() {
 function updateCube(x, y, z, isAlive) {
     const index = x * gridSize * gridSize + y * gridSize + z;
     const cube = scene.children[index + 2]; // +2 to account for the lights
-    cube.material.wireframe = !isAlive;
     cube.material.color.setHex(isAlive ? 0x00ff00 : 0xffffff);
+    cube.userData.originalColor = cube.material.color.getHex();
 }
 
 function resetCubes() {
     scene.children.slice(2).forEach(cube => {
         cube.material.wireframe = true;
         cube.material.color.setHex(0x00ff00);
+        cube.userData.originalColor = 0x00ff00;
+    });
+}
+
+function onCubeHover(event) {
+    event.object.material.color.setHex(0xff0000);
+}
+
+function onCubeHoverOut(event) {
+    event.object.material.color.setHex(event.object.userData.originalColor);
+}
+
+function onMouseMove(event) {
+    const mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(scene.children);
+    if (intersects.length > 0) {
+        if (intersects[0].object.userData.isHovered) return;
+        intersects[0].object.userData.isHovered = true;
+        onCubeHover(intersects[0]);
+    }
+    scene.children.forEach(child => {
+        if (child.userData.isHovered && !intersects.find(i => i.object === child)) {
+            child.userData.isHovered = false;
+            onCubeHoverOut({object: child});
+        }
     });
 }
 

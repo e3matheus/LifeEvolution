@@ -24,10 +24,10 @@ class GameOfLife3D:
                 for j in range(self.cols):
                     neighbors = self.count_neighbors(l, i, j)
                     if self.board[l][i][j] == 1:
-                        if neighbors in [4, 5]:  # Adjusted rule for 3D
+                        if 4 <= neighbors <= 5:
                             new_board[l][i][j] = 1
                     else:
-                        if neighbors == 5:  # Adjusted rule for 3D
+                        if neighbors == 4:
                             new_board[l][i][j] = 1
         
         return new_board
